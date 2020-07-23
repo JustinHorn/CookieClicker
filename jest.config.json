@@ -1,0 +1,5 @@
+{
+  "transform": {
+    "^.+\\.test.js$": "babel-jest"
+  }
+}

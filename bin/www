@@ -4,9 +4,10 @@
  * Module dependencies.
  */
 
-var app = require("../app");
-var debug = require("debug")("bankio:server");
-var http = require("http");
+import app from "../app";
+import debugMods from "debug";
+const debug = debugMods("bankio:server");
+import http from "http";
 
 /**
  * Get port from environment and store in Express.
