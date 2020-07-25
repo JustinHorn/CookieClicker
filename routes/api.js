@@ -1,13 +1,20 @@
 var express = require("express");
 const userModel = require("../models/data");
+const bcrypt = require("bcrypt");
+
 var router = express.Router();
+
+function pwCorrect(pw_body, pw_data) {
+  return pw_body === pw_data || bcrypt.compareSync(pw_body, pw_data);
+}
 
 /* GET users listing. */
 router.post("/get", async function (req, res, next) {
-  if (req.body.name) {
+  if (req.body.name && req.body.password) {
     const name = req.body.name;
+    const password = req.body.password;
     const user = await userModel.findOne({ name: name }).cursor().next();
-    if (user) {
+    if (user && pwCorrect(password, user.password)) {
       try {
         res.json({ user, success: true });
       } catch (err) {
@@ -23,15 +30,14 @@ router.post("/get", async function (req, res, next) {
 });
 
 router.post("/create", async function (req, res, next) {
-  if (req.body.name && typeof req.body.clicks === "number") {
-    const name = req.body.name;
-    const clicks = req.body.clicks;
+  const { name, password, clicks } = req.body;
+  if (name && password && typeof clicks === "number") {
     const user = await userModel.findOne({ name: name }).cursor().next();
 
     if (user) {
       res.status(400).send("Name already exists in values");
     } else {
-      const new_user = await new userModel({ name, clicks });
+      const new_user = await new userModel({ name, password, clicks });
       try {
         if (name !== "DO_NOT_REGISTER") {
           await new_user.save();
@@ -48,14 +54,12 @@ router.post("/create", async function (req, res, next) {
 });
 
 router.post("/update", async function (req, res, next) {
-  if (req.body.name && typeof req.body.clicks === "number") {
-    const name = req.body.name;
-    const clicks = req.body.clicks;
+  const { name, clicks, password } = req.body;
+  if (name && password && typeof clicks === "number") {
     const user = await userModel.findOne({ name: name }).cursor().next();
 
-    if (user) {
-      await user.updateOne({ clicks: clicks });
-      await user.save();
+    if (user && pwCorrect(password, user.password)) {
+      await user.updateOne({ password: password, clicks: clicks });
       res.json({ message: "Name updated", success: true });
     } else {
       res.status(400).send("Name cant be updated because it doesn't exist");
@@ -67,12 +71,11 @@ router.post("/update", async function (req, res, next) {
 });
 
 router.get("/delete", async function (req, res, next) {
-  if (req.body.name) {
-    const name = req.body.name;
-
+  const { name, password } = req.body;
+  if (name && password) {
     const user = await userModel.findOne({ name: name });
 
-    if (user) {
+    if (user && pwCorrect(password, user.password)) {
       await user.remove();
       res.json({ message: "Name deleted", success: true });
     } else {
