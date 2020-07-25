@@ -2,8 +2,6 @@ var express = require("express");
 const userModel = require("../models/data");
 var router = express.Router();
 
-const values = { test: 10 };
-
 /* GET users listing. */
 router.post("/get", async function (req, res, next) {
   if (req.body.name) {
@@ -16,39 +14,41 @@ router.post("/get", async function (req, res, next) {
         res.status(500).send(err);
       }
     } else {
-      res.json({ message: "name not found", success: false });
+      res.status(400).send("name not found");
     }
   } else {
-    res.json({ message: "no name in request", success: false });
+    res.status(400).send("no name in request");
     res.end();
   }
 });
 
 router.post("/create", async function (req, res, next) {
-  if (req.body.name && req.body.clicks) {
+  if (req.body.name && typeof req.body.clicks === "number") {
     const name = req.body.name;
     const clicks = req.body.clicks;
     const user = await userModel.findOne({ name: name }).cursor().next();
 
     if (user) {
-      res.json({ message: "Name already exists in values", success: false });
+      res.status(400).send("Name already exists in values");
     } else {
-      const user = await new userModel({ name, clicks });
+      const new_user = await new userModel({ name, clicks });
       try {
-        await user.save();
+        if (name !== "DO_NOT_REGISTER") {
+          await new_user.save();
+        }
         res.json({ message: "Name added", success: true });
       } catch (err) {
         res.status(500).send(err);
       }
     }
   } else {
-    res.json({ message: "no name or clicks send", success: false });
+    res.status(400).send("no name or clicks send");
     res.end();
   }
 });
 
 router.post("/update", async function (req, res, next) {
-  if (req.body.name && req.body.clicks) {
+  if (req.body.name && typeof req.body.clicks === "number") {
     const name = req.body.name;
     const clicks = req.body.clicks;
     const user = await userModel.findOne({ name: name }).cursor().next();
@@ -58,13 +58,10 @@ router.post("/update", async function (req, res, next) {
       await user.save();
       res.json({ message: "Name updated", success: true });
     } else {
-      res.json({
-        message: "Name cant be updated because it doesn't exist",
-        success: false,
-      });
+      res.status(400).send("Name cant be updated because it doesn't exist");
     }
   } else {
-    res.json({ message: "no name or clicks send", success: false });
+    res.status(400).send("no name or clicks send");
     res.end();
   }
 });
@@ -79,13 +76,13 @@ router.get("/delete", async function (req, res, next) {
       await user.remove();
       res.json({ message: "Name deleted", success: true });
     } else {
-      res.json({
+      res.status(400).json({
         message: "Name cant be deleted because it doesn't exist",
         success: false,
       });
     }
   } else {
-    res.json({ message: "no name send", success: false });
+    res.status(400).json({ message: "no name send", success: false });
     res.end();
   }
 });

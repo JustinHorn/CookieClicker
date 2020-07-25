@@ -26,6 +26,13 @@ describe("App", () => {
 
     it("create", async () => {
       await request(app)
+        .post("/api/get")
+        .send({ name: "test_create" })
+        .then((response) => {
+          expect(response.status).to.equal(400);
+        });
+
+      await request(app)
         .post("/api/create")
         .send({ name: "test_create", clicks: 20 })
         .then((response) => {
@@ -63,6 +70,29 @@ describe("App", () => {
         });
     });
 
+    it("update name that doesn't exist", async () => {
+      await request(app)
+        .post("/api/get")
+        .send({ name: "does_not_exist" })
+        .then((response) => {
+          expect(response.status).to.equal(400);
+        });
+
+      await request(app)
+        .post("/api/update")
+        .send({ name: "does_not_exist", clicks: 25 })
+        .then((response) => {
+          expect(response.status).to.equal(400);
+        });
+
+      await request(app)
+        .post("/api/get")
+        .send({ name: "does_not_exist" })
+        .then((response) => {
+          expect(response.status).to.equal(400);
+        });
+    });
+
     it("delete name", async () => {
       await request(app)
         .post("/api/get")
@@ -83,7 +113,7 @@ describe("App", () => {
         .post("/api/get")
         .send({ name: "test_create" })
         .then((response) => {
-          expect(response.body.success).to.equal(false);
+          expect(response.status).to.equal(400);
         });
     });
   });
