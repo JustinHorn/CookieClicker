@@ -5,7 +5,27 @@ import cookieParser from "cookie-parser";
 import logger from "morgan";
 
 import usersRouter from "./routes/users";
+
+import apiRouter from "./routes/api";
+
+require("dotenv").config();
+
 import cors from "cors";
+
+const mongoose = require("mongoose");
+
+mongoose.connect(process.env.MONGODB, {
+  useNewUrlParser: true,
+});
+
+const db = mongoose.connection;
+db.once("open", (_) => {
+  console.log("Database connected:");
+});
+db.on("error", (err) => {
+  console.error("connection error:", err);
+});
+
 const app = express();
 
 // view engine setup
@@ -21,6 +41,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 
 app.use("/users", usersRouter);
+app.use("/api", apiRouter);
 
 app.get("/", function (req, res, next) {
   res.send("Hello World");
