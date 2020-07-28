@@ -11,7 +11,8 @@
   "scripts": {
     "watch": "nodemon -r esm",
     "start": "node -r esm ./bin/www",
-    "test": "mocha -r esm app.test.js"
+    "test": "mocha -r esm app.test.js",
+    "heroku-postbuild": "cd client && yarn --only=dev && yarn && yarn build"
   },
   "dependencies": {
     "bcrypt": "^5.0.0",
@@ -31,5 +32,8 @@
   "devDependencies": {
     "superagent": "^5.3.1",
     "supertest": "^4.0.2"
+  },
+  "engines": {
+    "node": "12.16.3"
   }
 }
