@@ -3,6 +3,7 @@ import express from "express";
 import path from "path";
 import cookieParser from "cookie-parser";
 import logger from "morgan";
+import path from "path";
 
 import usersRouter from "./routes/users";
 
@@ -39,6 +40,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
+app.use(express.static(path.join(__dirname, "client", "build")));
 
 app.use("/users", usersRouter);
 app.use("/api", apiRouter);
@@ -46,6 +48,10 @@ app.use("/api", apiRouter);
 app.get("/", function (req, res, next) {
   res.send("Hello World");
   res.end();
+});
+
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "client", "build", "index.html"));
 });
 
 // catch 404 and forward to error handler
