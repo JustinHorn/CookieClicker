@@ -115,11 +115,11 @@ const parts = window.location.origin.split(":");
 const url = parts[0] + ":" + parts[1] + ":9000";
 
 export async function getUser(params) {
-  return await axios.post(url + "/api/get", params);
+  return await axios.post("/api/get", params);
 }
 
 export async function createUser(params) {
-  return await axios.post(url + "/api/create", params);
+  return await axios.post("/api/create", params);
 }
 
 export default App;

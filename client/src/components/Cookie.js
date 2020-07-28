@@ -39,5 +39,5 @@ const parts = window.location.origin.split(":");
 const url = parts[0] + ":" + parts[1] + ":9000";
 
 export async function updateUser(data) {
-  return await axios.post(url + "/api/update", data);
+  return await axios.post("/api/update", data);
 }
