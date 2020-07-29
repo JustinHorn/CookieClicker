@@ -49,7 +49,6 @@ describe("App", () => {
 
     test("cookie exists", () => {
       app.update();
-      //console.log(app.debug());
       expect(app.find("Cookie").find("h1").text()).toBe(USER_NAME);
 
       expect(app.find(".enterName").exists()).toBe(true);

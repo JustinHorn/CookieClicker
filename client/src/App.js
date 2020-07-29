@@ -6,23 +6,21 @@ import "./App.css";
 import axios from "axios";
 import { act } from "react-dom/test-utils";
 
+import Authentication from "./components/authentication";
+
 function App() {
   const [user, setUser] = useState({ name: "Guest", clicks: 0 });
 
-  const input = useRef(null);
-  const inputPassword = useRef(null);
-
-  const inputNew = useRef(null);
-  const inputNewPassword = useRef(null);
-
-  const login = (e) => {
-    if (input.current.value.trim() && inputPassword.current.value.trim()) {
+  const login = (name, password, user) => {
+    if (name.trim() && password.trim()) {
       getUser({
-        name: input.current.value,
-        password: inputPassword.current.value,
+        name: name,
+        password: password,
       })
         .then((response) => {
-          act(() => setUser(response.data.user));
+          const new_user = response.data.user;
+          new_user.clicks = new_user.clicks + user.clicks;
+          act(() => setUser(new_user));
         })
         .catch((err) => {
           console.log(err);
@@ -30,15 +28,13 @@ function App() {
     }
   };
 
-  const register = () => {
-    if (
-      inputNew.current.value.trim() &&
-      inputNewPassword.current.value.trim()
-    ) {
+  const register = (name, password, user) => {
+    const clicks = user.name === "Guest" ? user.clicks : 0;
+    if (name.trim() && password.trim()) {
       const newUser = {
-        name: inputNew.current.value,
-        password: inputNewPassword.current.value,
-        clicks: 0,
+        name: name,
+        password: password,
+        clicks: clicks,
       };
       createUser(newUser)
         .then((response) => {
@@ -52,67 +48,11 @@ function App() {
 
   return (
     <div className="App">
+      <Authentication login={login} register={register} user={user} />
       <Cookie user={user} />
-
-      <div>
-        <div>
-          <h3>Login</h3>
-          <form>
-            <input
-              type="text"
-              ref={input}
-              className="enterName"
-              placeholder="enter name"
-              required
-            />
-            <input
-              type="password"
-              ref={inputPassword}
-              className="enterPassword"
-              placeholder="enter password"
-              required
-            />
-            <input
-              type="button"
-              className="login"
-              onClick={(e) => login(e)}
-              value="login"
-            />
-          </form>
-        </div>
-        <br />
-        <div>
-          <h3>Register</h3>
-          <form>
-            <input
-              type="text"
-              ref={inputNew}
-              className="enterNewName"
-              placeholder="enter NEW name"
-              required
-            />
-            <input
-              type="password"
-              ref={inputNewPassword}
-              className="enterNewPassword"
-              placeholder="enter password"
-              required
-            />
-            <input
-              type="button"
-              className="register"
-              onClick={(e) => register()}
-              value="register"
-            />
-          </form>
-        </div>
-      </div>
     </div>
   );
 }
-
-const parts = window.location.origin.split(":");
-const url = parts[0] + ":" + parts[1] + ":9000";
 
 export async function getUser(params) {
   return await axios.post("/api/get", params);
