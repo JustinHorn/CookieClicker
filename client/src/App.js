@@ -1,6 +1,6 @@
 import React, { useRef, useState } from "react";
 
-import Cookie from "./components/Cookie";
+import Cookie from "./components/cookie/";
 import "./App.css";
 
 import axios from "axios";
@@ -8,10 +8,22 @@ import { act } from "react-dom/test-utils";
 
 import Authentication from "./components/authentication";
 
-function App() {
+
+export default function App() {
   const [user, setUser] = useState({ name: "Guest", clicks: 0 });
 
-  const login = (name, password, user) => {
+  const loginRegister = getLoginAndRegister(user, setUser);
+
+  return (
+    <div className="App">
+        <Cookie user={user} />
+        <Authentication {...loginRegister} />
+    </div>
+  );
+}
+
+function getLoginAndRegister(user, setUser) {
+  const login = (name, password) => {
     if (name.trim() && password.trim()) {
       getUser({
         name: name,
@@ -28,7 +40,7 @@ function App() {
     }
   };
 
-  const register = (name, password, user) => {
+  const register = (name, password) => {
     const clicks = user.name === "Guest" ? user.clicks : 0;
     if (name.trim() && password.trim()) {
       const newUser = {
@@ -45,13 +57,7 @@ function App() {
         });
     }
   };
-
-  return (
-    <div className="App">
-      <Authentication login={login} register={register} user={user} />
-      <Cookie user={user} />
-    </div>
-  );
+  return { login: login, register: register };
 }
 
 export async function getUser(params) {
@@ -61,5 +67,3 @@ export async function getUser(params) {
 export async function createUser(params) {
   return await axios.post("/api/create", params);
 }
-
-export default App;

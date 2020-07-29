@@ -23,16 +23,20 @@ describe("App", () => {
 
     test("Cookie does not exists", () => {
       expect(app.find("Cookie").exists()).toBe(true);
-      expect(app.find("Cookie").find("h1").text()).toBe("Guest");
+      expect(app.find("Cookie").find(".username").text()).toBe("Guest");
     });
     test("inputs exists", () => {
-      expect(app.find(".enterName").exists()).toBe(true);
-      expect(app.find(".enterPassword").exists()).toBe(true);
-      expect(app.find(".login").exists()).toBe(true);
+      const login = app.find(".login");
 
-      expect(app.find(".enterNewName").exists()).toBe(true);
-      expect(app.find(".enterNewPassword").exists()).toBe(true);
-      expect(app.find(".register").exists()).toBe(true);
+      const register = app.find(".register");
+
+      expect(login.find(".name").exists()).toBe(true);
+      expect(login.find(".password").exists()).toBe(true);
+      expect(login.find(".button").exists()).toBe(true);
+
+      expect(register.find(".name").exists()).toBe(true);
+      expect(register.find(".password").exists()).toBe(true);
+      expect(register.find(".button").exists()).toBe(true);
     });
   });
 
@@ -40,19 +44,18 @@ describe("App", () => {
     const app = mount(<App />);
 
     beforeAll(() => {
-      app.find(".enterName").instance().value = USER_NAME;
-      app.find(".enterName").simulate("change");
-      app.find(".enterPassword").instance().value = PASSWORD;
-      app.find(".enterPassword").simulate("change");
-      app.find(".login").simulate("click");
+      const login = app.find(".login");
+
+      login.find(".name").instance().value = USER_NAME;
+      login.find(".name").simulate("change");
+      login.find(".password").instance().value = PASSWORD;
+      login.find(".password").simulate("change");
+      login.find(".button").simulate("click");
     });
 
     test("cookie exists", () => {
       app.update();
-      expect(app.find("Cookie").find("h1").text()).toBe(USER_NAME);
-
-      expect(app.find(".enterName").exists()).toBe(true);
-      expect(app.find(".login").exists()).toBe(true);
+      expect(app.find("Cookie").find(".username").text()).toBe(USER_NAME);
     });
 
     test("clicks loaded", () => {
@@ -69,19 +72,21 @@ describe("App", () => {
     const app = mount(<App />);
 
     beforeAll(() => {
-      app.find(".enterNewName").instance().value = "DO_NOT_REGISTER";
-      app.find(".enterNewName").simulate("change");
-      app.find(".enterNewPassword").instance().value = PASSWORD;
-      app.find(".enterNewPassword").simulate("change");
-      app.find(".register").simulate("click");
+      const register = app.find(".register");
+
+      register.find(".name").instance().value = "DO_NOT_REGISTER";
+      register.find(".name").simulate("change");
+      register.find(".password").instance().value = PASSWORD;
+      register.find(".password").simulate("change");
+      register.find(".button").simulate("click");
     });
 
     test("cookie exists", () => {
       app.update();
 
-      expect(app.find("Cookie").find("h1").text()).toBe("DO_NOT_REGISTER");
-      expect(app.find(".enterName").exists()).toBe(true);
-      expect(app.find(".register").exists()).toBe(true);
+      expect(app.find("Cookie").find(".username").text()).toBe(
+        "DO_NOT_REGISTER"
+      );
     });
     afterAll(() => {
       app.detach();

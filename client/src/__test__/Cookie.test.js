@@ -9,16 +9,16 @@ jest.mock("axios");
 const USER_NAME = "test_user";
 
 describe("Cookie", () => {
-  const cookie = mount(<Cookie user={{ name: USER_NAME, clicks: 0 }}></Cookie>);
+  const cookie = mount(<Cookie user={{ name: USER_NAME, clicks: 0 }} />);
 
   test("exists", () => {
     expect(cookie.exists()).toBe(true);
-    expect(cookie.find("h1").exists()).toBe(true);
-    expect(cookie.find("h1").text()).toBe(USER_NAME);
+    expect(cookie.find(".username").exists()).toBe(true);
+    expect(cookie.find(".username").text()).toBe(USER_NAME);
   });
 
   test("increases clicks on click", () => {
-    cookie.find(".click").simulate("click");
+    cookie.find("img").simulate("click");
     expect(cookie.find(".click").text()).toBe("1");
   });
 

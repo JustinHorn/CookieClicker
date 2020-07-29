@@ -1,0 +1,24 @@
+.basicBuild {
+  display: grid;
+  grid-template-columns: auto 200px 200px auto;
+
+  grid-template-areas: " . register login .";
+}
+
+.register {
+  grid-area: register;
+  text-align: left;
+}
+
+.register * {
+  margin: 5px 0;
+}
+
+.login {
+  grid-area: login;
+  text-align: left;
+}
+
+.login * {
+  margin: 5px 0;
+}
