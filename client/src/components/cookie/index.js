@@ -15,7 +15,7 @@ export default function Cookie({ user }) {
   }, [user]);
 
   useEffect(() => {
-    animateCookie();
+    animateCookie(clicks);
   }, [clicks]);
 
   return (
