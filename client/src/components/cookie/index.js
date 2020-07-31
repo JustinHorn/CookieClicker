@@ -1,21 +1,37 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useRef } from "react";
 
 import CookieImage from "./cookie.svg";
 
 import styles from "./cookie.module.css";
 import axios from "axios";
 
-import UserContext from "../../Context";
-
 export default function Cookie({ user }) {
   const [clicks, setClicks] = useState(user.clicks);
 
+  const preUser = useRef();
   useEffect(() => {
+    preUser.current = user;
+  });
+  const previousUser = preUser.current;
+
+  useEffect(() => {
+    if (previousUser) {
+      if (isGuest(previousUser)) {
+        user.clicks = user.clicks + previousUser.clicks;
+        if (previousUser.clicks > 0) {
+          updateClicks(user, user.clicks);
+        }
+      }
+    }
     setClicks(user.clicks);
   }, [user]);
 
   useEffect(() => {
-    animateCookie(clicks);
+    if (user.clicks !== clicks && clicks % 10 === 0) {
+      updateClicks(user, clicks);
+    }
+    user.clicks = clicks;
+    animateCookie(user.clicks);
   }, [clicks]);
 
   return (
@@ -25,6 +41,7 @@ export default function Cookie({ user }) {
       </span>
       <div className={styles.cookieContainer}>
         <img
+          id="test_cookie"
           src={CookieImage}
           onClick={(e) => setClicks(clicks + 1)}
           className={styles.cookie}
@@ -33,13 +50,17 @@ export default function Cookie({ user }) {
       </div>
       <br />
       <span>
-        clicks: <span className="click">{clicks}</span>
+        clicks: <span className="clicks">{clicks}</span>
       </span>
-      <button className="send" onClick={getSend(user, clicks)}>
+      <button className="send" onClick={getUpdateClicks(user, clicks)}>
         update clicks to server
       </button>
     </div>
   );
+}
+
+function isGuest(user) {
+  return user.name === "Guest";
 }
 
 function animateCookie(clicks) {
@@ -59,19 +80,21 @@ function animateCookie(clicks) {
   }
 }
 
-function getSend(user, clicks) {
-  return (e) => {
-    if (user.name !== "Guest") {
-      updateUser({
-        ...user,
-        clicks: clicks,
-      }).then((response) => {
-        if (!response.success) {
-          console.log(response.message);
-        }
-      });
-    }
-  };
+function getUpdateClicks(user, clicks) {
+  return (e) => updateClicks(user, clicks);
+}
+
+function updateClicks(user, clicks) {
+  if (!isGuest(user)) {
+    updateUser({
+      ...user,
+      clicks: clicks,
+    }).then((response) => {
+      if (!response.success) {
+        console.log(response.message);
+      }
+    });
+  }
 }
 
 export async function updateUser(data) {

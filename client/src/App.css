@@ -1,3 +1,12 @@
 .App {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
   text-align: center;
+}
+
+.table td,
+.table tr {
+  padding: 0 5vw 0 5vw;
 }

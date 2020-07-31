@@ -23,9 +23,9 @@ const AuthenticationComponent = ({ text, styles, onClick }) => {
   const name = useRef(null);
   const pw = useRef(null);
 
-  const lowertext = text.toLowerCase();
+  const lowerText = text.toLowerCase();
   return (
-    <div className={styles + " " + lowertext}>
+    <div className={styles + " " + lowerText}>
       <h3>{text}</h3>
       <form>
         <input
@@ -46,7 +46,7 @@ const AuthenticationComponent = ({ text, styles, onClick }) => {
           type="button"
           className={"button"}
           onClick={(e) => onClick(getValue(name), getValue(pw))}
-          value={lowertext}
+          value={lowerText}
         />
       </form>
     </div>
