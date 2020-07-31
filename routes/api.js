@@ -13,16 +13,21 @@ router.post("/get", async function (req, res, next) {
   if (req.body.name && req.body.password) {
     const name = req.body.name;
     const password = req.body.password;
-    const user = await userModel.findOne({ name: name }).cursor().next();
-    if (user && pwCorrect(password, user.password)) {
-      try {
-        res.json({ user, success: true });
-      } catch (err) {
-        res.status(500).send(err);
+    userModel.findOne({ name: name }, async (err, user) => {
+      if (err) {
+        res.send("error");
+        console.log(err);
       }
-    } else {
-      res.status(400).send("name not found");
-    }
+      if (user && pwCorrect(password, user.password)) {
+        try {
+          res.json({ user, success: true });
+        } catch (err) {
+          res.status(500).send(err);
+        }
+      } else {
+        res.status(400).send("name not found");
+      }
+    });
   } else {
     res.status(400).send("no name in request");
     res.end();
@@ -32,21 +37,21 @@ router.post("/get", async function (req, res, next) {
 router.post("/create", async function (req, res, next) {
   const { name, password, clicks } = req.body;
   if (name && password && typeof clicks === "number") {
-    const user = await userModel.findOne({ name: name }).cursor().next();
-
-    if (user) {
-      res.status(400).send("Name already exists in values");
-    } else {
-      const new_user = await new userModel({ name, password, clicks });
-      try {
-        if (name !== "DO_NOT_REGISTER") {
-          await new_user.save();
+    userModel.findOne({ name: name }, (err, user) => {
+      if (user) {
+        res.status(400).send("Name already exists in values");
+      } else {
+        const new_user = new userModel({ name, password, clicks });
+        try {
+          if (name !== "DO_NOT_REGISTER") {
+            new_user.save();
+          }
+          res.json({ message: "Name added", success: true });
+        } catch (err) {
+          res.status(500).send(err);
         }
-        res.json({ message: "Name added", success: true });
-      } catch (err) {
-        res.status(500).send(err);
       }
-    }
+    });
   } else {
     res.status(400).send("no name or clicks send");
     res.end();
@@ -56,38 +61,52 @@ router.post("/create", async function (req, res, next) {
 router.post("/update", async function (req, res, next) {
   const { name, clicks, password } = req.body;
   if (name && password && typeof clicks === "number") {
-    const user = await userModel.findOne({ name: name }).cursor().next();
+    userModel.findOne({ name: name }, async (err, user) => {
+      if (err) throw err;
 
-    if (user && pwCorrect(password, user.password)) {
-      await user.updateOne({ password: password, clicks: clicks });
-      res.json({ message: "Name updated", success: true });
-    } else {
-      res.status(400).send("Name cant be updated because it doesn't exist");
-    }
+      if (user && pwCorrect(password, user.password)) {
+        await user.updateOne({ password: password, clicks: clicks });
+        res.json({ message: "Name updated", success: true });
+      } else {
+        res.status(400).send("Name cant be updated because it doesn't exist");
+      }
+    });
   } else {
     res.status(400).send("no name or clicks send");
     res.end();
   }
 });
 
-router.get("/delete", async function (req, res, next) {
+router.post("/delete", async function (req, res, next) {
   const { name, password } = req.body;
   if (name && password) {
-    const user = await userModel.findOne({ name: name });
-
-    if (user && pwCorrect(password, user.password)) {
-      await user.remove();
-      res.json({ message: "Name deleted", success: true });
-    } else {
-      res.status(400).json({
-        message: "Name cant be deleted because it doesn't exist",
-        success: false,
-      });
-    }
+    userModel.findOne({ name: name }, (err, user) => {
+      if (err) console.log(err);
+      if (user && pwCorrect(password, user.password)) {
+        user.remove();
+        res.json({ message: "Name deleted", success: true });
+      } else {
+        res.status(400).json({
+          message: "Name cant be deleted because it doesn't exist",
+          success: false,
+        });
+      }
+    });
   } else {
     res.status(400).json({ message: "no name send", success: false });
     res.end();
   }
+});
+
+router.post("/scoreboard", async function (req, res, next) {
+  const users = userModel.find({}).limit(10);
+  users.select("name clicks");
+  users.sort("-clicks");
+
+  const scores = await users.exec();
+
+  res.status(200).json({ scores: scores, success: true });
+  res.end();
 });
 
 module.exports = router;

@@ -2,9 +2,10 @@
 // try to mod ths project to use import and from instead of require!
 
 import app from "./app";
-import { expect } from "chai";
+import { expect, assert } from "chai";
 
 import request from "supertest";
+import { get } from "superagent";
 
 // do not send id tomorrow
 
@@ -115,7 +116,7 @@ describe("App", () => {
         });
 
       await request(app)
-        .get("/api/delete")
+        .post("/api/delete")
         .send({ name: "test_create", password: "1234" })
         .then((response) => {
           expect(response.body.success).to.equal(true);
@@ -130,6 +131,23 @@ describe("App", () => {
         });
     });
   });
-});
 
-// learn about proper request handling!
+  describe("Scoreboard", () => {
+    it("get 5 to ten entries", async () => {
+      await request(app)
+        .post("/api/scoreboard")
+        .send("")
+        .then((response) => {
+          expect(response.status).to.equal(200);
+          const scores = response.body.scores;
+          expect(scores.length <= 10).to.equal(true);
+
+          const testElement = scores[0];
+          assert.ok(testElement.name);
+          assert.ok(testElement.clicks || testElement.clicks === 0);
+          assert.ok(!testElement.password);
+          expect(scores[0].clicks).to.be.gt(scores[4].clicks);
+        });
+    });
+  });
+});
