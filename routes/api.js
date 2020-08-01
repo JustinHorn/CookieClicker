@@ -99,7 +99,7 @@ router.post("/delete", async function (req, res, next) {
 });
 
 router.post("/scoreboard", async function (req, res, next) {
-  const users = userModel.find({}).limit(10);
+  const users = userModel.find({}).limit(20);
   users.select("name clicks");
   users.sort("-clicks");
 

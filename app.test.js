@@ -140,7 +140,7 @@ describe("App", () => {
         .then((response) => {
           expect(response.status).to.equal(200);
           const scores = response.body.scores;
-          expect(scores.length <= 10).to.equal(true);
+          expect(scores.length <= 20).to.equal(true);
 
           const testElement = scores[0];
           assert.ok(testElement.name);
