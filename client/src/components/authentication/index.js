@@ -42,6 +42,7 @@ const AuthenticationComponent = ({ text, styles, onClick }) => {
           placeholder="enter password"
           required
         />
+        <br />
         <input
           type="button"
           className={"button"}

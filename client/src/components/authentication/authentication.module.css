@@ -1,13 +1,24 @@
 .basicBuild {
   display: grid;
   grid-template-columns: auto 200px 200px auto;
-
   grid-template-areas: " . register login .";
+  width: fit-content;
+}
+
+@media (max-width: 400px) {
+  .basicBuild {
+    display: grid;
+    grid-template-columns: auto 300px auto;
+    grid-template-rows: auto auto;
+    grid-template-areas:
+      " . register ."
+      ". login .";
+  }
 }
 
 .register {
   grid-area: register;
-  text-align: left;
+  text-align: center;
 }
 
 .register * {
@@ -16,7 +27,7 @@
 
 .login {
   grid-area: login;
-  text-align: left;
+  text-align: center;
 }
 
 .login * {
