@@ -135,7 +135,7 @@ describe("App", () => {
   describe("Scoreboard", () => {
     it("get 5 to ten entries", async () => {
       await request(app)
-        .post("/api/scoreboard")
+        .get("/api/scoreboard")
         .send("")
         .then((response) => {
           expect(response.status).to.equal(200);

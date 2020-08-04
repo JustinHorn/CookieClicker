@@ -19,22 +19,22 @@ const standardUser = {
   },
 };
 axios.post.mockImplementation((api) => {
-  if (api === "/api/scoreboard") {
-    return Promise.resolve({
-      data: {
-        scores: [
-          { name: "Justin", clicks: 10 },
-          { name: "test", clicks: 15 },
-          { name: "Justin", clicks: 10 },
-          { name: "test", clicks: 15 },
-          { name: "Justin", clicks: 10 },
-          { name: "test", clicks: 15 },
-        ],
-      },
-    });
-  }
-
   return Promise.resolve({ ...standardUser });
+});
+
+axios.get.mockImplementation((request) => {
+  return Promise.resolve({
+    data: {
+      scores: [
+        { name: "Justin", clicks: 10 },
+        { name: "test", clicks: 15 },
+        { name: "Justin", clicks: 10 },
+        { name: "test", clicks: 15 },
+        { name: "Justin", clicks: 10 },
+        { name: "test", clicks: 15 },
+      ],
+    },
+  });
 });
 
 describe("App", () => {

@@ -90,7 +90,7 @@ function getLoginAndRegister(setUser) {
 /*
  */
 const getScoreboard = async () => {
-  return await axios.post("/api/scoreboard");
+  return await axios.get("/api/scoreboard");
 };
 
 export async function getUser(params) {

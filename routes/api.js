@@ -2,6 +2,8 @@ var express = require("express");
 const userModel = require("../models/data");
 const bcrypt = require("bcrypt");
 
+const cors = require("cors");
+
 var router = express.Router();
 
 function pwCorrect(pw_body, pw_data) {
@@ -98,7 +100,7 @@ router.post("/delete", async function (req, res, next) {
   }
 });
 
-router.post("/scoreboard", async function (req, res, next) {
+router.get("/scoreboard", cors(), async function (req, res, next) {
   const users = userModel.find({}).limit(20);
   users.select("name clicks");
   users.sort("-clicks");

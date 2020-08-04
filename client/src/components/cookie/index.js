@@ -8,11 +8,7 @@ import axios from "axios";
 export default function Cookie({ user }) {
   const [clicks, setClicks] = useState(user.clicks);
 
-  const preUser = useRef();
-  useEffect(() => {
-    preUser.current = user;
-  });
-  const previousUser = preUser.current;
+  const previousUser = usePrevious(user);
 
   useEffect(() => {
     if (previousUser) {
@@ -57,6 +53,14 @@ export default function Cookie({ user }) {
       </button>
     </div>
   );
+}
+
+function usePrevious(currentUser) {
+  const preUser = useRef();
+  useEffect(() => {
+    preUser.current = currentUser;
+  });
+  return preUser.current;
 }
 
 function isGuest(user) {
