@@ -1,12 +1,12 @@
-import createError from "http-errors";
-import express from "express";
-import path from "path";
 import cookieParser from "cookie-parser";
+import express from "express";
+import createError from "http-errors";
 import logger from "morgan";
-
-import usersRouter from "./routes/users";
+import path from "path";
 
 import apiRouter from "./routes/api";
+import usersRouter from "./routes/users";
+import cors from "cors";
 
 require("dotenv").config();
 
@@ -14,6 +14,7 @@ const mongoose = require("mongoose");
 
 mongoose.connect(process.env.MONGODB, {
   useNewUrlParser: true,
+  useUnifiedTopology: true,
 });
 
 const db = mongoose.connection;
@@ -30,7 +31,12 @@ const app = express();
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");
 
-app.use(logger("dev"));
+app.use(
+  cors((req, callback) =>
+    callback(null, { origin: req.hostname !== "localhost" })
+  )
+);
+app.use(logger("combined"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());

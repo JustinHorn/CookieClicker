@@ -30,10 +30,11 @@
     "morgan": "~1.9.1"
   },
   "devDependencies": {
+    "nodemon": "^2.0.12",
     "superagent": "^5.3.1",
     "supertest": "^4.0.2"
   },
   "engines": {
-    "node": "12.16.3"
+    "node": "12.18.4"
   }
 }
